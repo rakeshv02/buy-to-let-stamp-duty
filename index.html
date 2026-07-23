@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ROI Calculator — Return on Investment | Tabutility</title>
-  <meta name="description" content="Calculate return on investment (ROI), annualised return, and profit/loss for any investment. Simple and detailed ROI analysis." />
-  <meta name="keywords" content="roi calculator, return on investment, investment return, annualised return, profit calculator" />
-  <link rel="canonical" href="https://roi.tabutility.com/" />
-  <meta property="og:title" content="ROI Calculator — Return on Investment" />
-  <meta property="og:description" content="Calculate ROI, annualised return and profit for any investment instantly." />
+  <title>Buy-to-Let Stamp Duty Calculator 2025 — 5% Surcharge | Tabutility</title>
+  <meta name="description" content="Calculate stamp duty (SDLT) on a buy-to-let or second property purchase in England and Northern Ireland. Includes the 5% additional dwellings surcharge from October 2024." />
+  <meta name="keywords" content="buy to let stamp duty calculator, additional dwellings surcharge, second home stamp duty, sdlt buy to let 2025" />
+  <link rel="canonical" href="https://buy-to-let-stamp-duty.tabutility.com/" />
+  <meta property="og:title" content="Buy-to-Let Stamp Duty Calculator 2025" />
+  <meta property="og:description" content="Calculate SDLT on buy-to-let and second properties including the 5% surcharge." />
   <meta property="og:type" content="website" />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏘️</text></svg>" />
   <meta name="robots" content="index, follow" />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7039091592734005" crossorigin="anonymous"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-78VZWJ5B1W"></script>
@@ -24,25 +24,45 @@
 <script type="text/babel">
 //<![CDATA[
 const { useState } = React;
-function fmt(n){return '$'+Math.abs(Math.round(n)).toLocaleString();}
-function fmtPct(n){return (n>=0?'+':'')+n.toFixed(2)+'%';}
+function fmt(n){return '£'+Math.round(n).toLocaleString('en-GB');}
+function fmtPct(n){return n.toFixed(2)+'%';}
+
+function calcSDLT(price, isBTL) {
+  // England & NI SDLT bands (from 1 April 2025 — standard thresholds reset)
+  // Standard residential: 0% up to £125k, 2% 125k-250k, 5% 250k-925k, 10% 925k-1.5m, 12% above
+  const bands = [
+    { limit: 125000, rate: 0 },
+    { limit: 250000, rate: 0.02 },
+    { limit: 925000, rate: 0.05 },
+    { limit: 1500000, rate: 0.10 },
+    { limit: Infinity, rate: 0.12 },
+  ];
+  const surcharge = isBTL ? 0.05 : 0;
+
+  let sdlt = 0;
+  const breakdown = [];
+  let prev = 0;
+  for (const b of bands) {
+    const slice = Math.min(price, b.limit) - prev;
+    if (slice <= 0) break;
+    const rate = b.rate + surcharge;
+    const tax = slice * rate;
+    sdlt += tax;
+    breakdown.push({ from: prev, to: Math.min(price, b.limit), rate, slice, tax });
+    prev = b.limit;
+    if (price <= b.limit) break;
+  }
+  return { sdlt, breakdown };
+}
 
 function App() {
-  const [initial, setInitial] = useState(10000);
-  const [final, setFinal] = useState(14500);
-  const [years, setYears] = useState(3);
-  const [fees, setFees] = useState(0);
+  const [price, setPrice] = useState(350000);
+  const [type, setType] = useState('btl');
 
-  const inv = Number(initial)||0;
-  const fin = Number(final)||0;
-  const yrs = Number(years)||1;
-  const fee = Number(fees)||0;
-
-  const netFinal = fin - fee;
-  const profit = netFinal - inv;
-  const roi = inv > 0 ? (profit / inv * 100) : 0;
-  const annualised = inv > 0 && yrs > 0 ? (Math.pow(netFinal/inv, 1/yrs)-1)*100 : 0;
-  const positive = profit >= 0;
+  const p = Number(price)||0;
+  const isBTL = type === 'btl' || type === 'second';
+  const r = calcSDLT(p, isBTL);
+  const effectivePct = p > 0 ? r.sdlt / p * 100 : 0;
 
   return (
     <div style={{maxWidth:520,margin:'0 auto',paddingBottom:40}}>
@@ -50,54 +70,49 @@ function App() {
         <a href="https://tabutility.com" style={{color:'#a5b4fc',textDecoration:'none',fontSize:14}}>← All Tools</a>
         <span style={{color:'#fff',fontWeight:700,fontSize:15}}>⚡ Tabutility</span>
       </div>
-      <div style={{background:'linear-gradient(135deg,#0891b2,#0e7490)',padding:'28px 20px',textAlign:'center',color:'#fff'}}>
-        <div style={{fontSize:36,marginBottom:8}}>📈</div>
-        <h1 style={{margin:'0 0 6px',fontSize:22,fontWeight:900}}>ROI Calculator</h1>
-        <p style={{margin:0,fontSize:13,opacity:0.85}}>Return on investment · annualised return · profit/loss</p>
+      <div style={{background:'linear-gradient(135deg,#92400e,#78350f)',padding:'28px 20px',textAlign:'center',color:'#fff'}}>
+        <div style={{fontSize:36,marginBottom:8}}>🏘️</div>
+        <h1 style={{margin:'0 0 6px',fontSize:22,fontWeight:900}}>Buy-to-Let Stamp Duty</h1>
+        <p style={{margin:0,fontSize:13,opacity:0.85}}>SDLT 2025 — 5% additional dwellings surcharge</p>
       </div>
       <div style={{padding:20}}>
         <div style={{background:'#fff',borderRadius:14,padding:20,boxShadow:'0 2px 12px rgba(0,0,0,0.06)',marginBottom:16}}>
-          {[['Initial Investment','$',initial,setInitial],['Final Value','$',final,setFinal],['Fees / Costs','$',fees,setFees]].map(([label,prefix,val,setter])=>(
-            <div key={label} style={{marginBottom:14}}>
-              <label style={{fontSize:13,fontWeight:600,color:'#374151',display:'block',marginBottom:6}}>{label}</label>
-              <div style={{position:'relative'}}>
-                <span style={{position:'absolute',left:12,top:'50%',transform:'translateY(-50%)',color:'#6b7280'}}>{prefix}</span>
-                <input type="number" value={val} onChange={e=>setter(e.target.value)}
-                  style={{width:'100%',padding:'11px 12px 11px 28px',borderRadius:10,border:'2px solid #e5e7eb',fontSize:16,boxSizing:'border-box'}} />
-              </div>
+          <div style={{marginBottom:14}}>
+            <label style={{fontSize:13,fontWeight:600,color:'#374151',display:'block',marginBottom:6}}>Property Purchase Price</label>
+            <div style={{position:'relative'}}>
+              <span style={{position:'absolute',left:12,top:'50%',transform:'translateY(-50%)',color:'#6b7280'}}>£</span>
+              <input type="number" value={price} onChange={e=>setPrice(e.target.value)}
+                style={{width:'100%',padding:'11px 12px 11px 28px',borderRadius:10,border:'2px solid #e5e7eb',fontSize:16,boxSizing:'border-box'}} />
             </div>
-          ))}
-          <div>
-            <label style={{fontSize:13,fontWeight:600,color:'#374151',display:'block',marginBottom:6}}>Investment Period (years)</label>
-            <input type="number" value={years} onChange={e=>setYears(e.target.value)} min={0.1} step={0.5}
-              style={{width:'100%',padding:'11px 12px',borderRadius:10,border:'2px solid #e5e7eb',fontSize:16,boxSizing:'border-box'}} />
+          </div>
+          <label style={{fontSize:13,fontWeight:600,color:'#374151',display:'block',marginBottom:8}}>Purchase Type</label>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            {[['btl','🏘️ Buy-to-Let / Investment Property'],['second','🏡 Second Home (holiday let etc.)'],['main','🏠 Main Residence Only']].map(([v,l])=>(
+              <button key={v} onClick={()=>setType(v)} style={{padding:'11px 14px',borderRadius:10,border:`2px solid ${type===v?'#92400e':'#e5e7eb'}`,background:type===v?'#fef3c7':'#fff',color:'#374151',fontWeight:type===v?700:400,cursor:'pointer',fontSize:13,textAlign:'left'}}>{l}</button>
+            ))}
           </div>
         </div>
 
-        <div style={{background: positive?'#f0fdf4':'#fef2f2',borderRadius:14,padding:24,textAlign:'center',marginBottom:16,boxShadow:'0 2px 12px rgba(0,0,0,0.06)'}}>
-          <div style={{fontSize:13,fontWeight:600,color:'#6b7280',marginBottom:4}}>TOTAL ROI</div>
-          <div style={{fontSize:52,fontWeight:900,color: positive?'#059669':'#dc2626'}}>{fmtPct(roi)}</div>
-          <div style={{fontSize:15,color: positive?'#059669':'#dc2626',fontWeight:700}}>{positive?'+':''}{fmt(profit)} {positive?'profit':'loss'}</div>
+        <div style={{background:'linear-gradient(135deg,#fef3c7,#fde68a)',borderRadius:14,padding:24,textAlign:'center',marginBottom:16}}>
+          <div style={{fontSize:13,fontWeight:700,color:'#78350f'}}>STAMP DUTY (SDLT) DUE</div>
+          <div style={{fontSize:48,fontWeight:900,color:'#92400e',margin:'6px 0'}}>{fmt(r.sdlt)}</div>
+          <div style={{fontSize:14,color:'#b45309'}}>Effective rate: {fmtPct(effectivePct)}{isBTL?' (includes 5% surcharge)':''}</div>
         </div>
 
         <div style={{background:'#fff',borderRadius:14,padding:20,boxShadow:'0 2px 12px rgba(0,0,0,0.06)'}}>
-          {[
-            ['Initial Investment', fmt(inv)],
-            ['Final Value (before fees)', fmt(fin)],
-            ['Fees / Transaction Costs', fee > 0 ? '-'+fmt(fee) : '$0'],
-            ['Net Final Value', fmt(netFinal)],
-            ['Net Profit / Loss', (positive?'+':'-')+fmt(profit)],
-            ['Total ROI', fmtPct(roi)],
-            ['Annualised Return (CAGR)', fmtPct(annualised)+' / yr'],
-          ].map(([l,v])=>(
-            <div key={l} style={{display:'flex',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid #f0f0f0',fontSize:14}}>
-              <span style={{color:'#6b7280'}}>{l}</span>
-              <strong style={{color: l.includes('Loss')||l.includes('Fees')&&fee>0?'#dc2626':l.includes('ROI')||l.includes('Profit')||l.includes('CAGR')?positive?'#059669':'#dc2626':'#1a1a2e'}}>{v}</strong>
+          <div style={{fontWeight:700,fontSize:13,color:'#374151',marginBottom:10}}>Band Breakdown</div>
+          {r.breakdown.filter(b=>b.slice>0).map((b,i)=>(
+            <div key={i} style={{display:'flex',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid #f0f0f0',fontSize:13}}>
+              <span style={{color:'#6b7280'}}>{fmt(b.from)} – {b.to===Infinity?'above':fmt(b.to)} at {(b.rate*100).toFixed(0)}%</span>
+              <strong>{fmt(b.tax)}</strong>
             </div>
           ))}
+          <div style={{display:'flex',justifyContent:'space-between',padding:'9px 0',fontSize:14,borderTop:'2px solid #e5e7eb',marginTop:4}}>
+            <strong>Total SDLT</strong><strong style={{color:'#92400e'}}>{fmt(r.sdlt)}</strong>
+          </div>
         </div>
-        <div style={{background:'#ecfeff',borderRadius:12,padding:16,marginTop:16,fontSize:13,color:'#0e7490',lineHeight:1.6}}>
-          <strong>CAGR</strong> (Compound Annual Growth Rate) is the annualised ROI — useful when comparing investments held for different time periods.
+        <div style={{background:'#fef3c7',borderRadius:12,padding:16,marginTop:16,fontSize:13,color:'#78350f',lineHeight:1.6}}>
+          <strong>From October 2024:</strong> The additional dwellings surcharge increased from 3% to 5%. All buy-to-let and second home purchases in England and Northern Ireland attract this surcharge on every band. Scotland uses LBTT, Wales uses LTT — different rates apply.
         </div>
       </div>
     </div>
