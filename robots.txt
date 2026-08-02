@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+
 Sitemap: https://buy-to-let-stamp-duty.tabutility.com/sitemap.xml
